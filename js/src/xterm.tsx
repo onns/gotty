@@ -28,6 +28,8 @@ export class GoTTYXterm {
     constructor(elem: HTMLElement) {
         this.elem = elem;
         this.term = new Terminal({
+            fontFamily: '"BlexMono Nerd Font Mono", "DejaVu Sans Mono", "Everson Mono", FreeMono, Menlo, Terminal, monospace',
+            fontSize: 14,
             theme: {
                 background: "#fafafa",
                 foreground: "#6a6a6a",

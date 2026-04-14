@@ -1,3 +1,31 @@
+@font-face {
+  font-family: "BlexMono Nerd Font Mono";
+  src: url("./fonts/BlexMonoNerdFontMono-Regular.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "BlexMono Nerd Font Mono";
+  src: url("./fonts/BlexMonoNerdFontMono-Medium.ttf") format("truetype");
+  font-weight: bold;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "BlexMono Nerd Font Mono";
+  src: url("./fonts/BlexMonoNerdFontMono-Italic.ttf") format("truetype");
+  font-weight: normal;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: "BlexMono Nerd Font Mono";
+  src: url("./fonts/BlexMonoNerdFontMono-MediumItalic.ttf") format("truetype");
+  font-weight: bold;
+  font-style: italic;
+}
+
 .terminal {
   font-family: "BlexMono Nerd Font Mono", "DejaVu Sans Mono", "Everson Mono", FreeMono, Menlo,
     Terminal, monospace, "Apple Symbols";
@@ -19,4 +47,3 @@
   user-select: none;
   transition: opacity 180ms ease-in;
 }
-
