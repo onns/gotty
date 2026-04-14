@@ -27,7 +27,32 @@ export class GoTTYXterm {
 
     constructor(elem: HTMLElement) {
         this.elem = elem;
-        this.term = new Terminal();
+        this.term = new Terminal({
+            theme: {
+                background: "#fafafa",
+                foreground: "#6a6a6a",
+                cursor: "#6a6a6a",
+                cursorAccent: "#fafafa",
+                selectionBackground: "#bebebe",
+                selectionForeground: "#6a6a6a",
+                black: "#6a6a6a",
+                red: "#e05661",
+                green: "#1da912",
+                yellow: "#eea825",
+                blue: "#118dc3",
+                magenta: "#9a77cf",
+                cyan: "#56b6c2",
+                white: "#fafafa",
+                brightBlack: "#9b9fa6",
+                brightRed: "#e88189",
+                brightGreen: "#25d717",
+                brightYellow: "#f2bb54",
+                brightBlue: "#1caceb",
+                brightMagenta: "#b69ddc",
+                brightCyan: "#7bc6d0",
+                brightWhite: "#ffffff",
+            },
+        });
         this.fitAddOn = new FitAddon();
         this.zmodemAddon = new ZModemAddon({
             toTerminal: (x: Uint8Array) => this.term.write(x),
