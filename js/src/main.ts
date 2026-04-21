@@ -25,8 +25,8 @@ if (elem !== null) {
     // Initialize virtual keyboard after WebTTY is set up
     setTimeout(() => {
         const goTerm = term as GoTTYXterm;
-        if (goTerm && goTerm.toServer) {
-            new VirtualKeyboard(goTerm.term, goTerm.toServer);
+        if (goTerm != null && goTerm.toServer != null) {
+            new VirtualKeyboard(goTerm);
         }
     }, 500);
 

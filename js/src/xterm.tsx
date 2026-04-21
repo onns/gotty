@@ -190,4 +190,17 @@ export class GoTTYXterm {
     focus(): void {
         this.term.focus();
     }
+
+    fit(): void {
+        this.resizeListener();
+    }
+
+    getFontSize(): number {
+        return this.term.options.fontSize || 14;
+    }
+
+    setFontSize(size: number): void {
+        this.term.options.fontSize = size;
+        this.fitAddOn.fit();
+    }
 }

@@ -1,12 +1,11 @@
-import { Terminal } from "@xterm/xterm";
+import { GoTTYXterm } from "./xterm";
 
 export class VirtualKeyboard {
     container: HTMLElement;
-    toggleButton: HTMLElement;
+    toolbar: HTMLElement;
+    goTerm: GoTTYXterm;
     isVisible: boolean = false;
-    term: Terminal;
     encoder: TextEncoder;
-    toServer: (data: string | Uint8Array) => void;
 
     private modifierState: { ctrl: boolean; shift: boolean; alt: boolean } = {
         ctrl: false,
@@ -14,21 +13,50 @@ export class VirtualKeyboard {
         alt: false,
     };
 
-    constructor(term: Terminal, toServer: (data: string | Uint8Array) => void) {
-        this.term = term;
+    private static MIN_FONT_SIZE = 8;
+    private static MAX_FONT_SIZE = 32;
+    private static FONT_STEP = 2;
+
+    constructor(goTerm: GoTTYXterm) {
+        this.goTerm = goTerm;
         this.encoder = new TextEncoder();
-        this.toServer = toServer;
-        this.createToggleButton();
+        this.createToolbar();
         this.createKeyboard();
     }
 
-    private createToggleButton() {
-        this.toggleButton = document.createElement("button");
-        this.toggleButton.id = "vk-toggle";
-        this.toggleButton.innerHTML = "⌨";
-        this.toggleButton.title = "Toggle Virtual Keyboard";
-        this.toggleButton.addEventListener("click", () => this.toggle());
-        document.body.appendChild(this.toggleButton);
+    private createToolbar() {
+        this.toolbar = document.createElement("div");
+        this.toolbar.id = "vk-toolbar";
+
+        const zoomOut = document.createElement("button");
+        zoomOut.className = "vk-toolbar-btn";
+        zoomOut.innerHTML = "−";
+        zoomOut.title = "Zoom Out";
+        zoomOut.addEventListener("click", () => this.zoom(-1));
+
+        const zoomIn = document.createElement("button");
+        zoomIn.className = "vk-toolbar-btn";
+        zoomIn.innerHTML = "+";
+        zoomIn.title = "Zoom In";
+        zoomIn.addEventListener("click", () => this.zoom(1));
+
+        const toggleBtn = document.createElement("button");
+        toggleBtn.className = "vk-toolbar-btn vk-toolbar-toggle";
+        toggleBtn.innerHTML = "⌨";
+        toggleBtn.title = "Toggle Virtual Keyboard";
+        toggleBtn.addEventListener("click", () => this.toggle());
+
+        this.toolbar.appendChild(zoomOut);
+        this.toolbar.appendChild(zoomIn);
+        this.toolbar.appendChild(toggleBtn);
+        document.body.appendChild(this.toolbar);
+    }
+
+    private zoom(direction: number) {
+        const current = this.goTerm.getFontSize();
+        const next = current + direction * VirtualKeyboard.FONT_STEP;
+        if (next < VirtualKeyboard.MIN_FONT_SIZE || next > VirtualKeyboard.MAX_FONT_SIZE) return;
+        this.goTerm.setFontSize(next);
     }
 
     private createKeyboard() {
@@ -82,62 +110,30 @@ export class VirtualKeyboard {
         ].forEach(k => row4.appendChild(this.createKey(k.label, k.key, "normal")));
         this.container.appendChild(row4);
 
-        // Control row
+        // Modifier + Space row
         const row5 = document.createElement("div");
         row5.className = "vk-row";
-
-        // Ctrl
-        const ctrlKey = this.createKey("Ctrl", "\u001e", "modifier");
-        ctrlKey.addEventListener("click", (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            this.toggleModifier("ctrl", ctrlKey);
-        });
-        row5.appendChild(ctrlKey);
-
-        // Shift
-        const shiftKey = this.createKey("Shift", "\u001f", "modifier");
-        shiftKey.addEventListener("click", (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            this.toggleModifier("shift", shiftKey);
-        });
-        row5.appendChild(shiftKey);
-
-        // Alt
-        const altKey = this.createKey("Alt", "\u001b", "modifier");
-        altKey.addEventListener("click", (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            this.toggleModifier("alt", altKey);
-        });
-        row5.appendChild(altKey);
-
-        // Space
-        const spaceKey = this.createKey("Space", " ", "space");
-        row5.appendChild(spaceKey);
-
-        // Function keys
+        row5.appendChild(this.createKey("Ctrl", "ctrl", "modifier"));
+        row5.appendChild(this.createKey("Shift", "shift", "modifier"));
+        row5.appendChild(this.createKey("Alt", "alt", "modifier"));
+        row5.appendChild(this.createKey("Space", " ", "space"));
         row5.appendChild(this.createKey("Tab", "\t", "action"));
         row5.appendChild(this.createKey("Enter", "\r", "action"));
         row5.appendChild(this.createKey("Esc", "\u001b", "action"));
         row5.appendChild(this.createKey("Del", "\u007f", "action"));
-
         this.container.appendChild(row5);
 
         // Directional row
         const row6 = document.createElement("div");
-        row6.className = "vk-row vk-directional";
-        [
-            { label: "Home", key: "\u001b[H" },
-            { label: "↑", key: "\u001b[A" },
-            { label: "PgUp", key: "\u001b[5~" },
-            { label: "←", key: "\u001b[D" },
-            { label: "↓", key: "\u001b[B" },
-            { label: "→", key: "\u001b[C" },
-            { label: "End", key: "\u001b[F" },
-            { label: "PgDn", key: "\u001b[6~" },
-        ].forEach(k => row6.appendChild(this.createKey(k.label, k.key, "directional")));
+        row6.className = "vk-row";
+        row6.appendChild(this.createKey("Home", "\u001b[H", "directional"));
+        row6.appendChild(this.createKey("←", "\u001b[D", "directional"));
+        row6.appendChild(this.createKey("↑", "\u001b[A", "directional"));
+        row6.appendChild(this.createKey("↓", "\u001b[B", "directional"));
+        row6.appendChild(this.createKey("→", "\u001b[C", "directional"));
+        row6.appendChild(this.createKey("End", "\u001b[F", "directional"));
+        row6.appendChild(this.createKey("PgUp", "\u001b[5~", "directional"));
+        row6.appendChild(this.createKey("PgDn", "\u001b[6~", "directional"));
         this.container.appendChild(row6);
 
         document.body.appendChild(this.container);
@@ -147,45 +143,36 @@ export class VirtualKeyboard {
         const btn = document.createElement("button");
         btn.className = `vk-key vk-key-${type}`;
         btn.textContent = label;
-        btn.dataset.key = key;
-
-        if (type !== "modifier") {
-            btn.addEventListener("click", (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                this.sendKey(key);
-            });
-        }
-
+        btn.addEventListener("click", (e) => {
+            e.preventDefault();
+            this.handleKey(key, btn);
+        });
         return btn;
     }
 
-    private toggleModifier(modifier: string, btn: HTMLElement) {
-        this.modifierState[modifier as keyof typeof this.modifierState] = !this.modifierState[modifier as keyof typeof this.modifierState];
-        btn.classList.toggle("vk-active", this.modifierState[modifier as keyof typeof this.modifierState]);
-    }
+    private handleKey(key: string, btn: HTMLElement) {
+        // Handle modifier toggles
+        if (key === "ctrl" || key === "shift" || key === "alt") {
+            this.modifierState[key] = !this.modifierState[key];
+            btn.classList.toggle("vk-active", this.modifierState[key]);
+            return;
+        }
 
-    private sendKey(key: string) {
         let fullKey = key;
 
         if (this.modifierState.ctrl) {
             if (key.length === 1 && key >= "a" && key <= "z") {
                 fullKey = String.fromCharCode(key.charCodeAt(0) - 96);
-            } else if (key === "Enter") {
-                fullKey = "\u000d";
-            } else if (key === "Tab") {
-                fullKey = "\t";
-            } else if (key === "Escape" || key === "\u001b") {
-                fullKey = "\u001b";
-            } else if (key === " ") {
-                fullKey = "\u0000";
             }
+            this.modifierState.ctrl = false;
+            this.updateModifierButtons();
         }
 
         if (this.modifierState.shift) {
             if (key.length === 1 && key >= "a" && key <= "z") {
                 fullKey = key.toUpperCase();
-            } else if (key === "`") fullKey = "~";
+            }
+            else if (key === "`") fullKey = "~";
             else if (key === "1") fullKey = "!";
             else if (key === "2") fullKey = "@";
             else if (key === "3") fullKey = "#";
@@ -210,24 +197,57 @@ export class VirtualKeyboard {
             else if (key === "\u001b[B") fullKey = "\u001b[b";
             else if (key === "\u001b[C") fullKey = "\u001b[c";
             else if (key === "\u001b[D") fullKey = "\u001b[d";
+            this.modifierState.shift = false;
+            this.updateModifierButtons();
         }
 
         if (this.modifierState.alt) {
             fullKey = "\u001b" + key;
+            this.modifierState.alt = false;
+            this.updateModifierButtons();
         }
 
-        this.toServer(this.encoder.encode(fullKey));
+        this.goTerm.toServer(this.encoder.encode(fullKey));
+    }
+
+    private updateModifierButtons() {
+        this.container.querySelectorAll(".vk-key-modifier").forEach((btn) => {
+            const label = btn.textContent?.toLowerCase() || "";
+            if (label === "ctrl") btn.classList.toggle("vk-active", this.modifierState.ctrl);
+            if (label === "shift") btn.classList.toggle("vk-active", this.modifierState.shift);
+            if (label === "alt") btn.classList.toggle("vk-active", this.modifierState.alt);
+        });
     }
 
     toggle() {
         this.isVisible = !this.isVisible;
         this.container.classList.toggle("vk-hidden", !this.isVisible);
-        this.toggleButton.classList.toggle("vk-btn-active", this.isVisible);
+
+        // Update toggle button active state
+        const toggleBtn = this.toolbar.querySelector(".vk-toolbar-toggle");
+        if (toggleBtn) toggleBtn.classList.toggle("vk-btn-active", this.isVisible);
+
+        const termElem = this.goTerm.elem;
+        if (this.isVisible) {
+            // Wait for the keyboard to render, then adjust terminal height and toolbar position
+            requestAnimationFrame(() => {
+                const kbHeight = this.container.offsetHeight;
+                termElem.style.height = `calc(100% - ${kbHeight}px)`;
+                this.toolbar.style.bottom = `${kbHeight + 10}px`;
+                // Wait for CSS transition to finish before fitting
+                termElem.addEventListener("transitionend", () => this.goTerm.fit(), { once: true });
+            });
+        } else {
+            termElem.style.height = "100%";
+            this.toolbar.style.bottom = "20px";
+            // Wait for CSS transition to finish before fitting
+            termElem.addEventListener("transitionend", () => this.goTerm.fit(), { once: true });
+        }
     }
 
     destroy() {
-        if (this.toggleButton && this.toggleButton.parentNode) {
-            this.toggleButton.parentNode.removeChild(this.toggleButton);
+        if (this.toolbar && this.toolbar.parentNode) {
+            this.toolbar.parentNode.removeChild(this.toolbar);
         }
         if (this.container && this.container.parentNode) {
             this.container.parentNode.removeChild(this.container);
