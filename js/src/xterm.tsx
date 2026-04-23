@@ -25,11 +25,15 @@ export class GoTTYXterm {
     toServer: (data: string | Uint8Array) => void;
     encoder: TextEncoder
 
+    private static FONT_SIZE_KEY = "gotty-font-size";
+    private static DEFAULT_FONT_SIZE = 14;
+
     constructor(elem: HTMLElement) {
         this.elem = elem;
+        const savedFontSize = parseInt(localStorage.getItem(GoTTYXterm.FONT_SIZE_KEY) || "", 10);
         this.term = new Terminal({
             fontFamily: '"BlexMono Nerd Font Mono", "DejaVu Sans Mono", "Everson Mono", FreeMono, Menlo, Terminal, monospace',
-            fontSize: 14,
+            fontSize: savedFontSize > 0 ? savedFontSize : GoTTYXterm.DEFAULT_FONT_SIZE,
             theme: {
                 background: "#fafafa",
                 foreground: "#6a6a6a",
@@ -196,11 +200,12 @@ export class GoTTYXterm {
     }
 
     getFontSize(): number {
-        return this.term.options.fontSize || 14;
+        return this.term.options.fontSize || GoTTYXterm.DEFAULT_FONT_SIZE;
     }
 
     setFontSize(size: number): void {
         this.term.options.fontSize = size;
+        localStorage.setItem(GoTTYXterm.FONT_SIZE_KEY, String(size));
         this.fitAddOn.fit();
     }
 }
