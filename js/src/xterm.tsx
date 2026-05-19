@@ -35,6 +35,36 @@ export class GoTTYXterm {
             allowProposedApi: true,
             customGlyphs: true,
             rescaleOverlappingGlyphs: true,
+            // Defaults for when the server sends no preferences; any
+            // gotty_preferences values are applied on top by setPreferences.
+            fontFamily: '"BlexMono Nerd Font Mono", "DejaVu Sans Mono", "Everson Mono", FreeMono, Menlo, Terminal, monospace',
+            fontSize: 14,
+            fontWeight: "normal",
+            fontWeightBold: "500",
+            theme: {
+                background: "#fafafa",
+                foreground: "#6a6a6a",
+                cursor: "#6a6a6a",
+                cursorAccent: "#fafafa",
+                selectionBackground: "#bebebe",
+                selectionForeground: "#6a6a6a",
+                black: "#6a6a6a",
+                red: "#e05661",
+                green: "#1da912",
+                yellow: "#eea825",
+                blue: "#118dc3",
+                magenta: "#9a77cf",
+                cyan: "#56b6c2",
+                white: "#fafafa",
+                brightBlack: "#9b9fa6",
+                brightRed: "#e88189",
+                brightGreen: "#25d717",
+                brightYellow: "#f2bb54",
+                brightBlue: "#1caceb",
+                brightMagenta: "#b69ddc",
+                brightCyan: "#7bc6d0",
+                brightWhite: "#ffffff",
+            },
         });
 
         const unicode11Addon = new Unicode11Addon();
@@ -266,5 +296,9 @@ export class GoTTYXterm {
 
     focus(): void {
         this.term.focus();
+    }
+
+    fit(): void {
+        this.resizeListener();
     }
 }

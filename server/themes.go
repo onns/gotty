@@ -6,8 +6,33 @@ package server
 // Individual color overrides on top of the theme are supported.
 
 var builtinThemes = map[string]map[string]string{
-	// "default": Catppuccin Mocha — warm, high-contrast, easy on the eyes
+	// "default": One Light — clean light theme based on Atom One Light
 	"default": {
+		"foreground":    "#6a6a6a",
+		"background":    "#fafafa",
+		"cursor":        "#6a6a6a",
+		"cursorAccent":  "#fafafa",
+		"selection":     "#bebebe",
+		"black":         "#6a6a6a",
+		"red":           "#e05661",
+		"green":         "#1da912",
+		"yellow":        "#eea825",
+		"blue":          "#118dc3",
+		"magenta":       "#9a77cf",
+		"cyan":          "#56b6c2",
+		"white":         "#fafafa",
+		"brightBlack":   "#9b9fa6",
+		"brightRed":     "#e88189",
+		"brightGreen":   "#25d717",
+		"brightYellow":  "#f2bb54",
+		"brightBlue":    "#1caceb",
+		"brightMagenta": "#b69ddc",
+		"brightCyan":    "#7bc6d0",
+		"brightWhite":   "#ffffff",
+	},
+
+	// "catppuccin-mocha": Catppuccin Mocha — warm, high-contrast, easy on the eyes
+	"catppuccin-mocha": {
 		"foreground":    "#cdd6f4",
 		"background":    "#1e1e2e",
 		"cursor":        "#f5e0dc",
@@ -129,31 +154,6 @@ var builtinThemes = map[string]map[string]string{
 		"brightMagenta": "#ae81ff",
 		"brightCyan":    "#a1efe4",
 		"brightWhite":   "#f9f8f5",
-	},
-
-	// "light": Clean light theme
-	"light": {
-		"foreground":    "#383a42",
-		"background":    "#fafafa",
-		"cursor":        "#526eff",
-		"cursorAccent":  "#fafafa",
-		"selection":     "#e5e5e5",
-		"black":         "#383a42",
-		"red":           "#e45649",
-		"green":         "#50a14f",
-		"yellow":        "#c18401",
-		"blue":          "#0184bc",
-		"magenta":       "#a626a4",
-		"cyan":          "#0997b3",
-		"white":         "#f0f0f0",
-		"brightBlack":   "#696c77",
-		"brightRed":     "#e45649",
-		"brightGreen":   "#50a14f",
-		"brightYellow":  "#c18401",
-		"brightBlue":    "#0184bc",
-		"brightMagenta": "#a626a4",
-		"brightCyan":    "#0997b3",
-		"brightWhite":   "#ffffff",
 	},
 }
 

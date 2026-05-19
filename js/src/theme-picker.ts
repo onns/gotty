@@ -21,6 +21,7 @@ interface FontFamilyOption {
 }
 
 const FONT_FAMILIES: FontFamilyOption[] = [
+    { name: "BlexMono Nerd Font", value: "'BlexMono Nerd Font Mono', 'DejaVu Sans Mono', 'Everson Mono', FreeMono, Menlo, Terminal, monospace" },
     { name: "DejaVu Sans Mono", value: "'DejaVu Sans Mono', monospace" },
     { name: "JetBrains Mono", value: "'JetBrains Mono', monospace" },
     { name: "Fira Code", value: "'Fira Code', monospace" },
@@ -34,12 +35,12 @@ const FONT_FAMILIES: FontFamilyOption[] = [
 // Helper: map a theme name to a friendly display label
 function themeLabel(name: string): string {
     const labels: { [key: string]: string } = {
-        "default": "Default",
+        "default": "One Light",
+        "catppuccin-mocha": "Catppuccin Mocha",
         "nord": "Nord",
         "dracula": "Dracula",
         "solarized-dark": "Solarized Dark",
         "monokai": "Monokai",
-        "light": "Light",
     };
     return labels[name] || name;
 }
@@ -68,7 +69,7 @@ function applyFontPrefs(term: Terminal | undefined) {
 }
 
 // Build the picker UI and attach it to the page
-export function initThemePicker(term?: Terminal): void {
+export function initThemePicker(term?: Terminal, onToggleKeyboard?: () => void): void {
     const themes = (window as any).gotty_themes as ThemeMap | undefined;
     if (!themes) return;
 
@@ -77,10 +78,15 @@ export function initThemePicker(term?: Terminal): void {
     // --- Styles ---
     const style = document.createElement("style");
     style.textContent = `
-#gotty-theme-btn {
+#gotty-toolbar {
     position: fixed;
     bottom: 12px;
     right: 12px;
+    display: flex;
+    gap: 8px;
+    z-index: 9999;
+}
+#gotty-theme-btn, #gotty-kb-btn {
     width: 36px;
     height: 36px;
     border-radius: 50%;
@@ -89,7 +95,6 @@ export function initThemePicker(term?: Terminal): void {
     color: #fff;
     font-size: 18px;
     cursor: pointer;
-    z-index: 9999;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -97,9 +102,12 @@ export function initThemePicker(term?: Terminal): void {
     backdrop-filter: blur(4px);
     line-height: 1;
 }
-#gotty-theme-btn:hover {
+#gotty-theme-btn:hover, #gotty-kb-btn:hover {
     background: rgba(0,0,0,0.75);
     transform: scale(1.1);
+}
+#gotty-kb-btn.active {
+    background: rgba(17,141,195,0.85);
 }
 #gotty-theme-picker {
     position: fixed;
@@ -251,12 +259,30 @@ export function initThemePicker(term?: Terminal): void {
 
     document.head.appendChild(style);
 
-    // --- Button ---
+    // --- Toolbar (button group) ---
+    const toolbar = document.createElement("div");
+    toolbar.id = "gotty-toolbar";
+
     const btn = document.createElement("button");
     btn.id = "gotty-theme-btn";
     btn.textContent = "🎨";
     btn.title = "Display settings";
-    document.body.appendChild(btn);
+    toolbar.appendChild(btn);
+
+    if (onToggleKeyboard) {
+        const kbBtn = document.createElement("button");
+        kbBtn.id = "gotty-kb-btn";
+        kbBtn.textContent = "⌨";
+        kbBtn.title = "Toggle virtual keyboard";
+        kbBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            kbBtn.classList.toggle("active");
+            onToggleKeyboard();
+        });
+        toolbar.appendChild(kbBtn);
+    }
+
+    document.body.appendChild(toolbar);
 
     // --- Dropdown ---
     const container = document.createElement("div");
@@ -416,7 +442,7 @@ export function initThemePicker(term?: Terminal): void {
 
     // Close on outside click
     document.addEventListener("click", (e) => {
-        if (!container.contains(e.target as Node) && e.target !== btn) {
+        if (!container.contains(e.target as Node) && !toolbar.contains(e.target as Node)) {
             container.classList.remove("open");
         }
     });

@@ -28,20 +28,51 @@ assets: bindata/static/js/gotty.js.map \
 	bindata/static/css/xterm.css \
 	bindata/static/css/xterm_customize.css \
 	bindata/static/manifest.json \
-	bindata/static/icon_192.png
+	bindata/static/icon_192.png \
+	bindata/static/fonts/BlexMonoNerdFontMono-Regular.ttf \
+	bindata/static/fonts/BlexMonoNerdFontMono-Medium.ttf \
+	bindata/static/fonts/BlexMonoNerdFontMono-Italic.ttf \
+	bindata/static/fonts/BlexMonoNerdFontMono-MediumItalic.ttf
 
 all: gotty
 
-bindata/static bindata/static/css bindata/static/js:
+bindata/static bindata/static/css bindata/static/js bindata/static/fonts:
 	mkdir -p $@
 
-bindata/static/%: resources/% | bindata/static/css
+bindata/static/index.html: resources/index.html | bindata/static
 	cp "$<" "$@"
 
-bindata/static/css/%.css: resources/%.css | bindata/static
+bindata/static/icon.svg: resources/icon.svg | bindata/static
 	cp "$<" "$@"
 
-bindata/static/css/xterm.css: js/node_modules/@xterm/xterm/css/xterm.css | bindata/static
+bindata/static/favicon.ico: resources/favicon.ico | bindata/static
+	cp "$<" "$@"
+
+bindata/static/manifest.json: resources/manifest.json | bindata/static
+	cp "$<" "$@"
+
+bindata/static/icon_192.png: resources/icon_192.png | bindata/static
+	cp "$<" "$@"
+
+bindata/static/css/index.css: resources/index.css | bindata/static/css
+	cp "$<" "$@"
+
+bindata/static/css/xterm_customize.css: resources/xterm_customize.css | bindata/static/css
+	cp "$<" "$@"
+
+bindata/static/css/xterm.css: js/node_modules/@xterm/xterm/css/xterm.css | bindata/static/css
+	cp "$<" "$@"
+
+bindata/static/fonts/BlexMonoNerdFontMono-Regular.ttf: resources/fonts/BlexMonoNerdFontMono-Regular.ttf | bindata/static/fonts
+	cp "$<" "$@"
+
+bindata/static/fonts/BlexMonoNerdFontMono-Medium.ttf: resources/fonts/BlexMonoNerdFontMono-Medium.ttf | bindata/static/fonts
+	cp "$<" "$@"
+
+bindata/static/fonts/BlexMonoNerdFontMono-Italic.ttf: resources/fonts/BlexMonoNerdFontMono-Italic.ttf | bindata/static/fonts
+	cp "$<" "$@"
+
+bindata/static/fonts/BlexMonoNerdFontMono-MediumItalic.ttf: resources/fonts/BlexMonoNerdFontMono-MediumItalic.ttf | bindata/static/fonts
 	cp "$<" "$@"
 
 js/node_modules/@xterm/xterm/dist/xterm.css:

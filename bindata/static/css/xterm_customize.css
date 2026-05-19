@@ -1,19 +1,63 @@
+@font-face {
+  font-family: "BlexMono Nerd Font Mono";
+  src: url("./fonts/BlexMonoNerdFontMono-Regular.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "BlexMono Nerd Font Mono";
+  src: url("./fonts/BlexMonoNerdFontMono-Medium.ttf") format("truetype");
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "BlexMono Nerd Font Mono";
+  src: url("./fonts/BlexMonoNerdFontMono-Medium.ttf") format("truetype");
+  font-weight: bold;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "BlexMono Nerd Font Mono";
+  src: url("./fonts/BlexMonoNerdFontMono-Italic.ttf") format("truetype");
+  font-weight: normal;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: "BlexMono Nerd Font Mono";
+  src: url("./fonts/BlexMonoNerdFontMono-MediumItalic.ttf") format("truetype");
+  font-weight: 500;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: "BlexMono Nerd Font Mono";
+  src: url("./fonts/BlexMonoNerdFontMono-MediumItalic.ttf") format("truetype");
+  font-weight: bold;
+  font-style: italic;
+}
+
 .terminal {
-    font-family: "DejaVu Sans Mono", "Everson Mono", FreeMono, Menlo, Terminal, monospace, "Apple Symbols";
+  font-family: "BlexMono Nerd Font Mono", "DejaVu Sans Mono", "Everson Mono", FreeMono, Menlo,
+    Terminal, monospace, "Apple Symbols";
 }
 
 .xterm-overlay {
-    font-family: "DejaVu Sans Mono", "Everson Mono", FreeMono, Menlo, Terminal, monospace, "Apple Symbols";
-    border-radius: 15px;
-    font-size: xx-large;
-    color: black;
-    background: white;
-    opacity: 0.75;
-    padding: 0.2em 0.5em 0.2em 0.5em;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    user-select: none;
-    transition: opacity 180ms ease-in;
+  font-family: "BlexMono Nerd Font Mono", "DejaVu Sans Mono", "Everson Mono", FreeMono, Menlo,
+    Terminal, monospace, "Apple Symbols";
+  border-radius: 15px;
+  font-size: xx-large;
+  color: black;
+  background: white;
+  opacity: 0.75;
+  padding: 0.2em 0.5em 0.2em 0.5em;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  user-select: none;
+  transition: opacity 180ms ease-in;
 }
