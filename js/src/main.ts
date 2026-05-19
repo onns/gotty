@@ -2,6 +2,7 @@ import { ConnectionFactory } from "./websocket";
 import { WebTTY, protocols } from "./webtty";
 import { GoTTYXterm } from "./xterm";
 import { initThemePicker } from "./theme-picker";
+import { VirtualKeyboard } from "./VirtualKeyboard";
 
 // @TODO remove these
 declare var gotty_auth_token: string;
@@ -14,7 +15,6 @@ const elem = document.getElementById("terminal")
 if (elem !== null) {
     var term: GoTTYXterm;
     term = new GoTTYXterm(elem, gotty_preferences);
-    initThemePicker(term.term);
 
     const httpsEnabled = window.location.protocol == "https:";
     const queryArgs = (gotty_ws_query_args === "") ? "" : "?" + gotty_ws_query_args;
@@ -23,6 +23,10 @@ if (elem !== null) {
     const factory = new ConnectionFactory(url, protocols);
     const wt = new WebTTY(term, factory, args, gotty_auth_token);
     const closer = wt.open();
+
+    // Initialize virtual keyboard and theme picker together
+    const vk = new VirtualKeyboard(term);
+    initThemePicker(term.term, () => vk.toggle());
 
     // According to https://developer.mozilla.org/en-US/docs/Web/API/Window/unload_event
     // this event is unreliable and in some cases (Firefox is mentioned), having an
